@@ -1,7 +1,7 @@
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Grid } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import Link from "next/link";
 
 export default function Home() {
@@ -77,20 +77,16 @@ export default function Home() {
               textAlign: "center",
             }}
           >
-            <h2>Welcome to Flashy!</h2>
+            <h1>Welcome to Flashy!</h1>
             <p>Get ready to create your personalized flashcards.</p>
-            <button
-              style={{
-                backgroundColor: "#3a3a3a",
-                color: "#ffffff",
-                border: "none",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                marginTop: "1rem",
-              }}
-            >
-              Get Started
-            </button>
+            <Link href="/generate" passHref>
+              <Button
+                variant="contained"
+                sx={{ mt: 2, backgroundColor: "#3a3a3a" }}
+              >
+                Get Started
+              </Button>
+            </Link>
           </div>
         </Grid>
 
