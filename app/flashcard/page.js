@@ -1,35 +1,31 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
 
 import { useSearchParams } from "next/navigation";
 import {
   Container,
   Box,
-  TextField,
   Button,
   Card,
   CardContent,
   Typography,
   Grid,
   CardActionArea,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  CircularProgress,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import Image from "next/image";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Flashcard() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [flashcards, setFlashcards] = useState([]);
   const [flipped, setFlipped] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const searchParams = useSearchParams();
   const search = searchParams.get("id");
@@ -54,6 +50,20 @@ export default function Flashcard() {
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const navigateTo = (path) => {
+    // Implement navigation logic here
+    console.log(`Navigating to ${path}`);
+    handleMenuClose();
   };
 
   if (!isLoaded || !isSignedIn) {
@@ -83,11 +93,87 @@ export default function Flashcard() {
           <Image src="/flashy.jpeg" alt="Flashy Logo" width={40} height={40} />
           <h1 style={{ margin: 0, marginLeft: "0.5rem" }}>Flashy</h1>
         </div>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#1e1e1e",
+              padding: "0.5rem",
+            }}
+          >
+            <div style={{ marginLeft: "1rem" }}>
+              <button
+                style={{
+                  backgroundColor: "#3a3a3a",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+                onClick={handleMenuClick}
+              >
+                Menu
+              </button>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                sx={{ color: "gray", marginLeft: "-1rem" }}
+              >
+                <MenuItem component="a" href="/">
+                  <Typography sx={{ color: "#121212" }}>Home</Typography>
+                </MenuItem>
+                <MenuItem component="a" href="/generate">
+                  <Typography sx={{ color: "#121212" }}>Generate</Typography>
+                </MenuItem>
+                <MenuItem component="a" href="/flashcards">
+                  <Typography sx={{ color: "#121212" }}>Flashcards</Typography>
+                </MenuItem>
+              </Menu>
+            </div>
+            <SignedOut>
+              <Link href="/sign-in" passHref>
+                <button
+                  style={{
+                    marginRight: "1rem",
+                    marginLeft: "3rem",
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Login
+                </button>
+              </Link>
+              <Link href="/sign-up" passHref>
+                <button
+                  style={{
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Up
+                </button>
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <div style={{ marginLeft: "2rem" }}>
+                <UserButton />
+              </div>
+            </SignedIn>
+          </div>
+        </div>
       </nav>
-      <Container maxWidth="100vw">
+      <Container maxWidth="100vw" sx={{ ml: 2 }}>
         <Grid container spacing={3} sx={{ mt: 4 }}>
           {flashcards.length > 0 && (
             <Box
@@ -97,7 +183,7 @@ export default function Flashcard() {
                 maxHeight: "100%",
               }}
             >
-              <Typography variant="h5" sx={{ mb: 2, ml: 2 }}>
+              <Typography variant="h5" sx={{ mb: 2, ml: 3 }}>
                 {"Flashcard"}
               </Typography>
               <Grid container spacing={2}>

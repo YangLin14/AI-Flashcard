@@ -17,20 +17,15 @@ import {
   DialogContentText,
   DialogActions,
   CircularProgress,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import {
-  writeBatch,
-  doc,
-  collection,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
+import { writeBatch, doc, collection, getDoc } from "firebase/firestore";
 import Image from "next/image";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import Link from "next/link";
 import { db } from "@/firebase";
+import Link from "next/link";
 
 export default function Generate() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -39,7 +34,8 @@ export default function Generate() {
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // State to manage loading
+  const [loading, setLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -83,6 +79,14 @@ export default function Generate() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const saveFlashcards = async () => {
@@ -143,23 +147,15 @@ export default function Generate() {
           <h1 style={{ margin: 0, marginLeft: "0.5rem" }}>Flashy</h1>
         </div>
         <div>
-          <SignedOut>
-            <Link href="/sign-in" passHref>
-              <button
-                style={{
-                  marginRight: "1rem",
-                  backgroundColor: "#3a3a3a",
-                  color: "#ffffff",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Login
-              </button>
-            </Link>
-            <Link href="/sign-up" passHref>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#1e1e1e",
+              padding: "0.5rem",
+            }}
+          >
+            <div style={{ marginLeft: "1rem" }}>
               <button
                 style={{
                   backgroundColor: "#3a3a3a",
@@ -169,14 +165,62 @@ export default function Generate() {
                   borderRadius: "4px",
                   cursor: "pointer",
                 }}
+                onClick={handleMenuClick}
               >
-                Sign Up
+                Menu
               </button>
-            </Link>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                sx={{ color: "gray", marginLeft: "-1rem" }}
+              >
+                <MenuItem component="a" href="/">
+                  <Typography sx={{ color: "#121212" }}>Home</Typography>
+                </MenuItem>
+                <MenuItem component="a" href="/flashcards">
+                  <Typography sx={{ color: "#121212" }}>Flashcards</Typography>
+                </MenuItem>
+              </Menu>
+            </div>
+            <SignedOut>
+              <Link href="/sign-in" passHref>
+                <button
+                  style={{
+                    marginRight: "1rem",
+                    marginLeft: "3rem",
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Login
+                </button>
+              </Link>
+              <Link href="/sign-up" passHref>
+                <button
+                  style={{
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Up
+                </button>
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <div style={{ marginLeft: "2rem" }}>
+                <UserButton />
+              </div>
+            </SignedIn>
+          </div>
         </div>
       </nav>
       <Grid

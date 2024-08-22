@@ -1,10 +1,21 @@
+"use client";
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Menu, MenuItem, Typography } from "@mui/material";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div
       style={{
@@ -27,23 +38,15 @@ export default function Home() {
           <h1 style={{ margin: 0, marginLeft: "0.5rem" }}>Flashy</h1>
         </div>
         <div>
-          <SignedOut>
-            <Link href="/sign-in" passHref>
-              <button
-                style={{
-                  marginRight: "1rem",
-                  backgroundColor: "#3a3a3a",
-                  color: "#ffffff",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Login
-              </button>
-            </Link>
-            <Link href="/sign-up" passHref>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#1e1e1e",
+              padding: "0.5rem",
+            }}
+          >
+            <div style={{ marginLeft: "1rem" }}>
               <button
                 style={{
                   backgroundColor: "#3a3a3a",
@@ -53,14 +56,62 @@ export default function Home() {
                   borderRadius: "4px",
                   cursor: "pointer",
                 }}
+                onClick={handleMenuClick}
               >
-                Sign Up
+                Menu
               </button>
-            </Link>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                sx={{ color: "gray", marginLeft: "-1rem" }}
+              >
+                <MenuItem component="a" href="/generate">
+                  <Typography sx={{ color: "#121212" }}>Generate</Typography>
+                </MenuItem>
+                <MenuItem component="a" href="/flashcards">
+                  <Typography sx={{ color: "#121212" }}>Flashcards</Typography>
+                </MenuItem>
+              </Menu>
+            </div>
+            <SignedOut>
+              <Link href="/sign-in" passHref>
+                <button
+                  style={{
+                    marginRight: "1rem",
+                    marginLeft: "3rem",
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Login
+                </button>
+              </Link>
+              <Link href="/sign-up" passHref>
+                <button
+                  style={{
+                    backgroundColor: "#3a3a3a",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Up
+                </button>
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <div style={{ marginLeft: "2rem" }}>
+                <UserButton />
+              </div>
+            </SignedIn>
+          </div>
         </div>
       </nav>
       <Grid
