@@ -117,6 +117,9 @@ export default function Flashcards() {
                 <MenuItem component="a" href="/generate">
                   <Typography sx={{ color: "#121212" }}>Generate</Typography>
                 </MenuItem>
+                <MenuItem component="a" href="/flashcards">
+                  <Typography sx={{ color: "#121212" }}>Flashcards</Typography>
+                </MenuItem>
               </Menu>
             </div>
             <SignedOut>

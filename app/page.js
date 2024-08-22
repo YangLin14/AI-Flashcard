@@ -66,6 +66,9 @@ export default function Home() {
                 onClose={handleMenuClose}
                 sx={{ color: "gray", marginLeft: "-1rem" }}
               >
+                <MenuItem component="a" href="/">
+                  <Typography sx={{ color: "#121212" }}>Home</Typography>
+                </MenuItem>
                 <MenuItem component="a" href="/generate">
                   <Typography sx={{ color: "#121212" }}>Generate</Typography>
                 </MenuItem>

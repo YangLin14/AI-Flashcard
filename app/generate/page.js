@@ -178,6 +178,9 @@ export default function Generate() {
                 <MenuItem component="a" href="/">
                   <Typography sx={{ color: "#121212" }}>Home</Typography>
                 </MenuItem>
+                <MenuItem component="a" href="/generate">
+                  <Typography sx={{ color: "#121212" }}>Generate</Typography>
+                </MenuItem>
                 <MenuItem component="a" href="/flashcards">
                   <Typography sx={{ color: "#121212" }}>Flashcards</Typography>
                 </MenuItem>
