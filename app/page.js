@@ -7,6 +7,30 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function Home() {
+  const handleSubmit = async () => {
+    const checkoutSession = await fetch("/api/checkout_session", {
+      method: "POST",
+      headers: {
+        origin: "https://",
+      },
+    });
+
+    const checkoutSessionJson = await checkoutSession.json();
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message);
+      return;
+    }
+
+    const stripe = await getStripe();
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    });
+
+    if (error) {
+      console.warn(error.message);
+    }
+  };
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -237,6 +261,7 @@ export default function Home() {
             justifyContent: "center",
             alignItems: "center",
           }}
+          onClick={handleSubmit}
         >
           <div
             style={{
