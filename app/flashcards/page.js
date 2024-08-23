@@ -42,8 +42,36 @@ export default function Flashcards() {
     getFlashcards();
   }, [user]);
 
-  if (!isLoaded || !isSignedIn) {
-    return <></>;
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          backgroundColor: "#121212",
+          color: "#ffffff",
+        }}
+      >
+        <Typography variant="h5">
+          Please sign in to view your flashcards.
+        </Typography>
+        <Link href="/sign-in" passHref>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginLeft: "1rem" }}
+          >
+            Sign In
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   const handleCardClick = (id) => {
