@@ -11,7 +11,7 @@ export default function Home() {
     const checkoutSession = await fetch("/api/checkout_session", {
       method: "POST",
       headers: {
-        origin: "https://",
+        origin: "https://flashyai.vercel.app/",
       },
     });
 

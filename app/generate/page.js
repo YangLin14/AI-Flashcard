@@ -51,17 +51,24 @@ export default function Generate() {
     }
 
     setLoading(true); // Set loading to true when starting to fetch
-    fetch("api/generate", {
+    fetch("/api/generate", {
+      // Fixed the URL to include the leading slash
       method: "POST",
       body: text,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
       .then((data) => {
         setFlashcards(data);
         setLoading(false); // Set loading to false after data is fetched
       })
-      .catch(() => {
+      .catch((error) => {
         setLoading(false); // Ensure loading is false on error
+        console.error("An error occurred while generating flashcards:", error);
         alert("An error occurred while generating flashcards.");
       });
   };
@@ -90,6 +97,11 @@ export default function Generate() {
   };
 
   const saveFlashcards = async () => {
+    if (!isSignedIn) {
+      alert("Please sign in to save your flashcards.");
+      return;
+    }
+
     if (!name) {
       alert("Please enter a name");
       return;
