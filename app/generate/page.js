@@ -442,118 +442,123 @@ export default function Generate() {
             )}
 
             {flashcards.length > 0 && (
-              <Box
-                sx={{
-                  mt: 4,
-                  width: "100%",
-                  overflowY: "auto",
-                  maxHeight: "450px",
-                }}
-              >
-                <Typography variant="h5" sx={{ mb: 2, ml: 2 }}>
+              <>
+                <Typography
+                  variant="h5"
+                  sx={{ mb: 0, ml: 0, mt: 2, textAlign: "left" }}
+                >
                   Flashcards Preview
                 </Typography>
-                <Grid container spacing={2}>
-                  {flashcards.map((flashcard, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Card
-                        sx={{
-                          maxWidth: "100%",
-                          backgroundColor: "#1e1e1e",
-                        }}
-                      >
-                        <CardActionArea
-                          onClick={() => {
-                            setFlipped((prev) => {
-                              const newFlipped = flashcards.map(() => false);
-                              newFlipped[index] = !prev[index];
-                              return newFlipped;
-                            });
+                <Box
+                  sx={{
+                    mt: 4,
+                    width: "100%",
+                    overflowY: "auto",
+                    maxHeight: "450px",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    {flashcards.map((flashcard, index) => (
+                      <Grid item xs={12} sm={6} key={index}>
+                        <Card
+                          sx={{
+                            maxWidth: "100%",
+                            backgroundColor: "#1e1e1e",
                           }}
                         >
-                          <CardContent>
-                            <Box
-                              sx={{
-                                perspective: "1000px",
-                                "& > div": {
-                                  transition: "transform 0.6s",
-                                  transformStyle: "preserve-3d",
-                                  position: "relative",
-                                  width: "100%",
-                                  height: "200px",
-                                  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-                                  transform: flipped[index]
-                                    ? "rotateY(180deg)"
-                                    : "rotateY(0deg)",
-                                },
-                                "& > div > div": {
-                                  position: "absolute",
-                                  width: "100%",
-                                  height: "100%",
-                                  backfaceVisibility: "hidden",
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  padding: 2,
-                                  boxSizing: "border-box",
-                                  overflow: "auto",
-                                },
-                                "& > div > div:nth-of-type(2)": {
-                                  transform: "rotateY(180deg)",
-                                },
-                              }}
-                            >
-                              <div>
-                                <div>
-                                  <Typography
-                                    variant="h5"
-                                    component="div"
-                                    sx={{
-                                      color: "#ffffff",
-                                      fontSize: {
-                                        xs: "1rem",
-                                        sm: "1.25rem",
-                                      },
-                                    }}
-                                  >
-                                    {flashcard.front}
-                                  </Typography>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems:
-                                      flashcard.back.length > 200
-                                        ? "flex-start"
-                                        : "center", // Adjust alignment based on text length
+                          <CardActionArea
+                            onClick={() => {
+                              setFlipped((prev) => {
+                                const newFlipped = flashcards.map(() => false);
+                                newFlipped[index] = !prev[index];
+                                return newFlipped;
+                              });
+                            }}
+                          >
+                            <CardContent>
+                              <Box
+                                sx={{
+                                  perspective: "1000px",
+                                  "& > div": {
+                                    transition: "transform 0.6s",
+                                    transformStyle: "preserve-3d",
+                                    position: "relative",
+                                    width: "100%",
+                                    height: "200px",
+                                    boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                                    transform: flipped[index]
+                                      ? "rotateY(180deg)"
+                                      : "rotateY(0deg)",
+                                  },
+                                  "& > div > div": {
+                                    position: "absolute",
+                                    width: "100%",
                                     height: "100%",
-                                  }}
-                                >
-                                  <Typography
-                                    variant="h5"
-                                    component="div"
-                                    sx={{
-                                      color: "#ffffff",
-                                      fontSize: {
-                                        xs: "1rem",
-                                        sm: "1.25rem",
-                                      },
+                                    backfaceVisibility: "hidden",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    padding: 2,
+                                    boxSizing: "border-box",
+                                    overflow: "auto",
+                                  },
+                                  "& > div > div:nth-of-type(2)": {
+                                    transform: "rotateY(180deg)",
+                                  },
+                                }}
+                              >
+                                <div>
+                                  <div>
+                                    <Typography
+                                      variant="h5"
+                                      component="div"
+                                      sx={{
+                                        color: "#ffffff",
+                                        fontSize: {
+                                          xs: "1rem",
+                                          sm: "1.25rem",
+                                        },
+                                      }}
+                                    >
+                                      {flashcard.front}
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems:
+                                        flashcard.back.length > 200
+                                          ? "flex-start"
+                                          : "center", // Adjust alignment based on text length
+                                      height: "100%",
                                     }}
                                   >
-                                    {flashcard.back.startsWith(" ")
-                                      ? flashcard.back.trim()
-                                      : flashcard.back}
-                                  </Typography>
+                                    <Typography
+                                      variant="h5"
+                                      component="div"
+                                      sx={{
+                                        color: "#ffffff",
+                                        fontSize: {
+                                          xs: "1rem",
+                                          sm: "1.25rem",
+                                        },
+                                      }}
+                                    >
+                                      {flashcard.back.startsWith(" ")
+                                        ? flashcard.back.trim()
+                                        : flashcard.back}
+                                    </Typography>
+                                  </div>
                                 </div>
-                              </div>
-                            </Box>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
+                              </Box>
+                            </CardContent>
+                          </CardActionArea>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              </>
             )}
             {flashcards.length > 0 && (
               <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
@@ -621,7 +626,14 @@ export default function Generate() {
           </Box>
         </Container>
       ) : (
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            maxWidth: "90%",
+            margin: "0 auto",
+          }}
+        >
           <Grid item xs={12} sm={6}>
             <Card
               sx={{
@@ -717,7 +729,7 @@ export default function Generate() {
               </CardActionArea>
             </Card>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               label="Front (Question)"
               value={front}
@@ -753,6 +765,9 @@ export default function Generate() {
             </Button>
           </Grid>
           <Grid item xs={12}>
+            <Typography variant="h5" sx={{ mb: 2, ml: 2 }}>
+              Flashcards Preview
+            </Typography>
             <Box
               sx={{
                 mt: 4,
@@ -761,9 +776,6 @@ export default function Generate() {
                 maxHeight: "450px",
               }}
             >
-              <Typography variant="h5" sx={{ mb: 2, ml: 2 }}>
-                Flashcards Preview
-              </Typography>
               <Grid container spacing={2}>
                 {flashcards.map((flashcard, index) => (
                   <Grid item xs={12} sm={6} key={index}>
