@@ -19,9 +19,6 @@ import {
   CircularProgress,
   Menu,
   MenuItem,
-  Switch,
-  FormControlLabel,
-  styled,
 } from "@mui/material";
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -41,6 +38,8 @@ export default function Generate() {
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isAIGenerate, setIsAIGenerate] = useState(true);
+  const [front, setFront] = useState("");
+  const [back, setBack] = useState("");
 
   const router = useRouter();
 
@@ -236,6 +235,20 @@ export default function Generate() {
     );
   };
 
+  const saveFlashcard = async () => {
+    if (!front.trim() || !back.trim()) {
+      alert("Please fill out both the front and back of the flashcard.");
+      return;
+    }
+
+    const flashcard = {
+      front: front.trim(),
+      back: back.trim(),
+    };
+
+    setFlashcards((prev) => [...prev, flashcard]);
+  };
+
   return (
     <div
       style={{
@@ -372,61 +385,374 @@ export default function Generate() {
           </div>
         </Grid>
       </Grid>
-      <Container maxWidth="md">
-        <Box
-          sx={{
-            mt: 4,
-            mb: 6,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#121212",
-            color: "#ffffff",
-            borderRadius: "4px",
-            padding: "1rem",
-          }}
-        >
-          <TextField
-            label="Enter Flashcard Text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit();
-              }
-            }}
-            variant="outlined"
-            autoFocus
-            margin="dense"
-            type="text"
-            fullWidth
+
+      {isAIGenerate ? (
+        <Container maxWidth="md">
+          <Box
             sx={{
-              backgroundColor: "#333333",
-              "& .MuiInputBase-input": { color: "#ffffff" },
-              "& .MuiInputLabel-root": { color: "#ffffff" },
-              "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#ffffff",
-              },
-              "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-                { borderColor: "#ffffff" },
+              mt: 4,
+              mb: 6,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#121212",
+              color: "#ffffff",
+              borderRadius: "4px",
+              padding: "1rem",
             }}
-          />
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            sx={{ mt: 2, backgroundColor: "#3a3a3a" }}
           >
-            Submit
-          </Button>
+            <TextField
+              label="Enter Flashcard Text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit();
+                }
+              }}
+              variant="outlined"
+              autoFocus
+              margin="dense"
+              type="text"
+              fullWidth
+              sx={{
+                backgroundColor: "#333333",
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#ffffff" },
+                "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#ffffff",
+                },
+                "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                  { borderColor: "#ffffff" },
+              }}
+            />
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              sx={{ mt: 2, backgroundColor: "#3a3a3a" }}
+            >
+              Submit
+            </Button>
 
-          {loading && ( // Show loading animation when loading
-            <Box sx={{ mt: 2 }}>
-              <CircularProgress color="secondary" />
-            </Box>
-          )}
+            {loading && ( // Show loading animation when loading
+              <Box sx={{ mt: 2 }}>
+                <CircularProgress color="secondary" />
+              </Box>
+            )}
 
-          {flashcards.length > 0 && (
+            {flashcards.length > 0 && (
+              <Box
+                sx={{
+                  mt: 4,
+                  width: "100%",
+                  overflowY: "auto",
+                  maxHeight: "450px",
+                }}
+              >
+                <Typography variant="h5" sx={{ mb: 2, ml: 2 }}>
+                  Flashcards Preview
+                </Typography>
+                <Grid container spacing={2}>
+                  {flashcards.map((flashcard, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <Card
+                        sx={{
+                          maxWidth: "100%",
+                          backgroundColor: "#1e1e1e",
+                        }}
+                      >
+                        <CardActionArea
+                          onClick={() => {
+                            setFlipped((prev) => {
+                              const newFlipped = flashcards.map(() => false);
+                              newFlipped[index] = !prev[index];
+                              return newFlipped;
+                            });
+                          }}
+                        >
+                          <CardContent>
+                            <Box
+                              sx={{
+                                perspective: "1000px",
+                                "& > div": {
+                                  transition: "transform 0.6s",
+                                  transformStyle: "preserve-3d",
+                                  position: "relative",
+                                  width: "100%",
+                                  height: "200px",
+                                  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                                  transform: flipped[index]
+                                    ? "rotateY(180deg)"
+                                    : "rotateY(0deg)",
+                                },
+                                "& > div > div": {
+                                  position: "absolute",
+                                  width: "100%",
+                                  height: "100%",
+                                  backfaceVisibility: "hidden",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  padding: 2,
+                                  boxSizing: "border-box",
+                                  overflow: "auto",
+                                },
+                                "& > div > div:nth-of-type(2)": {
+                                  transform: "rotateY(180deg)",
+                                },
+                              }}
+                            >
+                              <div>
+                                <div>
+                                  <Typography
+                                    variant="h5"
+                                    component="div"
+                                    sx={{
+                                      color: "#ffffff",
+                                      fontSize: {
+                                        xs: "1rem",
+                                        sm: "1.25rem",
+                                      },
+                                    }}
+                                  >
+                                    {flashcard.front}
+                                  </Typography>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems:
+                                      flashcard.back.length > 200
+                                        ? "flex-start"
+                                        : "center", // Adjust alignment based on text length
+                                    height: "100%",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="h5"
+                                    component="div"
+                                    sx={{
+                                      color: "#ffffff",
+                                      fontSize: {
+                                        xs: "1rem",
+                                        sm: "1.25rem",
+                                      },
+                                    }}
+                                  >
+                                    {flashcard.back.startsWith(" ")
+                                      ? flashcard.back.trim()
+                                      : flashcard.back}
+                                  </Typography>
+                                </div>
+                              </div>
+                            </Box>
+                          </CardContent>
+                        </CardActionArea>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+            {flashcards.length > 0 && (
+              <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleOpen}
+                  sx={{ backgroundColor: "#3a3a3a" }}
+                >
+                  Save
+                </Button>
+              </Box>
+            )}
+
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              sx={{ backdropFilter: "blur(5px)", bgcolor: "transparent" }}
+            >
+              <DialogTitle sx={{ color: "#ffffff", bgcolor: "black" }}>
+                Save Flashcards
+              </DialogTitle>
+              <DialogContent sx={{ bgcolor: "black" }}>
+                <DialogContentText sx={{ color: "#ffffff" }}>
+                  Please enter a name for your flashcards collection.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Collection Name"
+                  type="text"
+                  fullWidth
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "#333333",
+                    color: "#ffffff",
+                    "& .MuiInputBase-input": { color: "#ffffff" },
+                    "& .MuiInputLabel-root": { color: "#ffffff" },
+                    "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                      {
+                        borderColor: "#ffffff",
+                      },
+                    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                      { borderColor: "#ffffff" },
+                  }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ bgcolor: "black" }}>
+                <Button
+                  onClick={handleClose}
+                  sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={saveFlashcards}
+                  sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
+                >
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        </Container>
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Card
+              sx={{
+                maxWidth: "100%",
+                backgroundColor: "#1e1e1e",
+              }}
+            >
+              <CardActionArea
+                onClick={() => {
+                  setFlipped((prev) => {
+                    const newFlipped = flashcards.map(() => false);
+                    newFlipped[flashcards.length - 1] =
+                      !prev[flashcards.length - 1];
+                    return newFlipped;
+                  });
+                }}
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      perspective: "1000px",
+                      "& > div": {
+                        transition: "transform 0.6s",
+                        transformStyle: "preserve-3d",
+                        position: "relative",
+                        width: "100%",
+                        height: "200px",
+                        boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                        transform: flipped[flashcards.length - 1]
+                          ? "rotateY(180deg)"
+                          : "rotateY(0deg)",
+                      },
+                      "& > div > div": {
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        backfaceVisibility: "hidden",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: 2,
+                        boxSizing: "border-box",
+                        overflow: "auto",
+                      },
+                      "& > div > div:nth-of-type(2)": {
+                        transform: "rotateY(180deg)",
+                      },
+                    }}
+                  >
+                    <div>
+                      <div>
+                        <Typography
+                          variant="h5"
+                          component="div"
+                          sx={{
+                            color: "#ffffff",
+                            fontSize: {
+                              xs: "1rem",
+                              sm: "1.25rem",
+                            },
+                          }}
+                        >
+                          {front || "Front (Question)"}
+                        </Typography>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems:
+                            back.length > 200 ? "flex-start" : "center",
+                          height: "100%",
+                        }}
+                      >
+                        <Typography
+                          variant="h5"
+                          component="div"
+                          sx={{
+                            color: "#ffffff",
+                            fontSize: {
+                              xs: "1rem",
+                              sm: "1.25rem",
+                            },
+                          }}
+                        >
+                          {back.startsWith(" ")
+                            ? back.trim()
+                            : back || "Back (Answer)"}
+                        </Typography>
+                      </div>
+                    </div>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Front (Question)"
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              sx={{ backgroundColor: "#333333", color: "#ffffff", mb: 2 }}
+              InputLabelProps={{ style: { color: "#ffffff" } }}
+              InputProps={{ style: { color: "#ffffff" } }}
+            />
+            <TextField
+              label="Back (Answer)"
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              sx={{ backgroundColor: "#333333", color: "#ffffff" }}
+              InputLabelProps={{ style: { color: "#ffffff" } }}
+              InputProps={{ style: { color: "#ffffff" } }}
+            />
+            <Button
+              variant="contained"
+              onClick={() => {
+                saveFlashcard();
+                setFront("");
+                setBack("");
+              }}
+              sx={{ mt: 2, backgroundColor: "#3a3a3a" }}
+            >
+              Save Flashcard
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
             <Box
               sx={{
                 mt: 4,
@@ -539,71 +865,72 @@ export default function Generate() {
                 ))}
               </Grid>
             </Box>
-          )}
-          {flashcards.length > 0 && (
-            <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleOpen}
-                sx={{ backgroundColor: "#3a3a3a" }}
-              >
-                Save
-              </Button>
-            </Box>
-          )}
 
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            sx={{ backdropFilter: "blur(5px)", bgcolor: "transparent" }}
-          >
-            <DialogTitle sx={{ color: "#ffffff", bgcolor: "black" }}>
-              Save Flashcards
-            </DialogTitle>
-            <DialogContent sx={{ bgcolor: "black" }}>
-              <DialogContentText sx={{ color: "#ffffff" }}>
-                Please enter a name for your flashcards collection.
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Collection Name"
-                type="text"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                variant="outlined"
-                sx={{
-                  backgroundColor: "#333333",
-                  color: "#ffffff",
-                  "& .MuiInputBase-input": { color: "#ffffff" },
-                  "& .MuiInputLabel-root": { color: "#ffffff" },
-                  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#ffffff",
-                  },
-                  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-                    { borderColor: "#ffffff" },
-                }}
-              />
-            </DialogContent>
-            <DialogActions sx={{ bgcolor: "black" }}>
-              <Button
-                onClick={handleClose}
-                sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={saveFlashcards}
-                sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
-              >
-                Save
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
-      </Container>
+            {flashcards.length > 0 && (
+              <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleOpen}
+                  sx={{ backgroundColor: "#3a3a3a" }}
+                >
+                  Save
+                </Button>
+              </Box>
+            )}
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              sx={{ backdropFilter: "blur(5px)", bgcolor: "transparent" }}
+            >
+              <DialogTitle sx={{ color: "#ffffff", bgcolor: "black" }}>
+                Save Flashcards
+              </DialogTitle>
+              <DialogContent sx={{ bgcolor: "black" }}>
+                <DialogContentText sx={{ color: "#ffffff" }}>
+                  Please enter a name for your flashcards collection.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Collection Name"
+                  type="text"
+                  fullWidth
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "#333333",
+                    color: "#ffffff",
+                    "& .MuiInputBase-input": { color: "#ffffff" },
+                    "& .MuiInputLabel-root": { color: "#ffffff" },
+                    "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                      {
+                        borderColor: "#ffffff",
+                      },
+                    "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                      { borderColor: "#ffffff" },
+                  }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ bgcolor: "black" }}>
+                <Button
+                  onClick={handleClose}
+                  sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={saveFlashcards}
+                  sx={{ backgroundColor: "#3a3a3a", color: "#ffffff" }}
+                >
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Grid>
+        </Grid>
+      )}
     </div>
   );
 }
