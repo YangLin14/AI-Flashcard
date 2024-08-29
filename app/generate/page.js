@@ -879,7 +879,9 @@ export default function Generate() {
             </Box>
 
             {flashcards.length > 0 && (
-              <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+              <Box
+                sx={{ mt: 4, mb: 6, display: "flex", justifyContent: "center" }}
+              >
                 <Button
                   variant="contained"
                   color="secondary"
