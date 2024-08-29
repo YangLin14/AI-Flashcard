@@ -19,6 +19,9 @@ import {
   CircularProgress,
   Menu,
   MenuItem,
+  Switch,
+  FormControlLabel,
+  styled,
 } from "@mui/material";
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -26,6 +29,7 @@ import { writeBatch, doc, collection, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import { db } from "@/firebase";
 import Link from "next/link";
+import React from "react";
 
 export default function Generate() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -36,6 +40,8 @@ export default function Generate() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isAIGenerate, setIsAIGenerate] = useState(true);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -52,9 +58,11 @@ export default function Generate() {
 
     setLoading(true); // Set loading to true when starting to fetch
     fetch("/api/generate", {
-      // Fixed the URL to include the leading slash
       method: "POST",
-      body: text,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: text }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -67,9 +75,13 @@ export default function Generate() {
         setLoading(false); // Set loading to false after data is fetched
       })
       .catch((error) => {
-        setLoading(false); // Ensure loading is false on error
-        console.error("An error occurred while generating flashcards:", error);
-        alert("An error occurred while generating flashcards.");
+        setLoading(false);
+        console.error("Detailed error:", error);
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+        alert(
+          "An error occurred while generating flashcards. Check console for details."
+        );
       });
   };
 
@@ -133,6 +145,95 @@ export default function Generate() {
     await batch.commit();
     handleClose();
     router.push(`/flashcards`);
+  };
+
+  const ToggleSwitch = ({ id, checked, onChange }) => {
+    const styles = {
+      canToggle: {
+        position: "relative",
+      },
+      input: {
+        opacity: 0,
+        position: "absolute",
+        top: 0,
+        left: 0,
+      },
+      label: {
+        userSelect: "none",
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+      },
+      switch: {
+        position: "relative",
+        flex: "0 0 240px",
+        height: "36px",
+        borderRadius: "18px",
+        transition: "background-color 0.3s ease-in-out",
+        backgroundColor: checked ? "#3a3a3a" : "#3a3a3a",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 4px",
+        cursor: "pointer",
+      },
+      switchText: {
+        fontSize: "14px",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+        zIndex: 1,
+        padding: "0 10px",
+        transition: "color 0.3s ease-in-out",
+      },
+      leftText: {
+        color: checked ? "rgba(255, 255, 255, 0.5)" : "white",
+      },
+      rightText: {
+        color: checked ? "white" : "rgba(255, 255, 255, 0.5)",
+      },
+      switchSlider: {
+        position: "absolute",
+        top: "2px",
+        width: "118px",
+        height: "32px",
+        backgroundColor: "white",
+        borderRadius: "16px",
+        transition:
+          "transform 0.3s ease-in-out, background-color 0.3s ease-in-out",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+      },
+    };
+
+    return (
+      <div className="can-toggle demo-rebrand-1" style={styles.canToggle}>
+        <input
+          id={id}
+          type="checkbox"
+          style={styles.input}
+          checked={checked}
+          onChange={onChange}
+        />
+        <label htmlFor={id} style={styles.label}>
+          <div style={styles.switch}>
+            <span style={{ ...styles.switchText, ...styles.leftText }}>
+              Self Create
+            </span>
+            <span style={{ ...styles.switchText, ...styles.rightText }}>
+              AI Generate
+            </span>
+            <div
+              style={{
+                ...styles.switchSlider,
+                transform: checked
+                  ? "translate3d(116px,0,0)"
+                  : "translate3d(0,0,0)",
+                backgroundColor: checked ? "#1976d2" : "#1976d2",
+              }}
+            />
+          </div>
+        </label>
+      </div>
+    );
   };
 
   return (
@@ -253,7 +354,21 @@ export default function Generate() {
             }}
           >
             <h2>Welcome to Flashy!</h2>
-            <p>Start by entering the topic of your flashcards.</p>
+            <p>Choose your flashcard generation method:</p>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mt: 2,
+              }}
+            >
+              <ToggleSwitch
+                id="generate-toggle"
+                checked={isAIGenerate}
+                onChange={() => setIsAIGenerate(!isAIGenerate)}
+              />
+            </Box>
           </div>
         </Grid>
       </Grid>
