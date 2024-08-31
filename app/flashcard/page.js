@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, doc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase";
 
 import { useSearchParams } from "next/navigation";
@@ -16,6 +22,11 @@ import {
   CardActionArea,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import Image from "next/image";
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
@@ -26,6 +37,11 @@ export default function Flashcard() {
   const [flashcards, setFlashcards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedFlashcard, setSelectedFlashcard] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newFront, setNewFront] = useState("");
+  const [newBack, setNewBack] = useState("");
 
   const searchParams = useSearchParams();
   const search = searchParams.get("id");
@@ -46,10 +62,18 @@ export default function Flashcard() {
   }, [user, search]);
 
   const handleCardClick = (id) => {
-    setFlipped((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    if (isEditing) {
+      const selectedCard = flashcards.find((card) => card.id === id);
+      setSelectedFlashcard(selectedCard);
+      setNewFront(selectedCard.front);
+      setNewBack(selectedCard.back);
+      setIsDialogOpen(true);
+    } else {
+      setFlipped((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    }
   };
 
   const handleMenuClick = (event) => {
@@ -60,10 +84,51 @@ export default function Flashcard() {
     setAnchorEl(null);
   };
 
-  const navigateTo = (path) => {
-    // Implement navigation logic here
-    console.log(`Navigating to ${path}`);
-    handleMenuClose();
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedFlashcard(null);
+    setNewFront("");
+    setNewBack("");
+  };
+
+  const handleSaveChanges = async () => {
+    if (selectedFlashcard) {
+      const updatedFlashcards = flashcards.map((card) =>
+        card.id === selectedFlashcard.id
+          ? { ...card, front: newFront, back: newBack }
+          : card
+      );
+      setFlashcards(updatedFlashcards);
+
+      // Update Firebase
+      const docRef = doc(
+        collection(doc(collection(db, "user"), user.id), search),
+        selectedFlashcard.id
+      );
+      await updateDoc(docRef, { front: newFront, back: newBack });
+    }
+    handleDialogClose();
+  };
+
+  const handleDeleteFlashcard = async () => {
+    if (selectedFlashcard) {
+      const updatedFlashcards = flashcards.filter(
+        (card) => card.id !== selectedFlashcard.id
+      );
+      setFlashcards(updatedFlashcards);
+
+      // Delete from Firebase
+      const docRef = doc(
+        collection(doc(collection(db, "user"), user.id), search),
+        selectedFlashcard.id
+      );
+      await deleteDoc(docRef);
+    }
+    handleDialogClose();
   };
 
   if (!isLoaded) {
@@ -130,6 +195,19 @@ export default function Flashcard() {
               padding: "0.5rem",
             }}
           >
+            <button
+              style={{
+                backgroundColor: isEditing ? "#ff4081" : "#3a3a3a",
+                color: "#ffffff",
+                border: "none",
+                padding: "0.5rem 1rem",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={handleEditClick}
+            >
+              {isEditing ? "Cancel Edit" : "Edit"}
+            </button>
             <div style={{ marginLeft: "1rem" }}>
               <button
                 style={{
@@ -219,17 +297,11 @@ export default function Flashcard() {
                   <Card
                     sx={{
                       maxWidth: "100%",
-                      backgroundColor: "#1e1e1e",
+                      backgroundColor: isEditing ? "#2e2e2e" : "#1e1e1e",
                     }}
                   >
                     <CardActionArea
-                      onClick={() => {
-                        setFlipped((prev) => {
-                          const newFlipped = flashcards.map(() => false);
-                          newFlipped[index] = !prev[index];
-                          return newFlipped;
-                        });
-                      }}
+                      onClick={() => handleCardClick(flashcard.id)}
                     >
                       <CardContent>
                         <Box
@@ -242,7 +314,7 @@ export default function Flashcard() {
                               width: "100%",
                               height: "200px",
                               boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-                              transform: flipped[index]
+                              transform: flipped[flashcard.id]
                                 ? "rotateY(180deg)"
                                 : "rotateY(0deg)",
                             },
@@ -317,6 +389,37 @@ export default function Flashcard() {
         )}
       </Grid>
       <Box sx={{ mb: 6 }} />
+      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Edit Flashcard</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Front"
+            type="text"
+            fullWidth
+            value={newFront}
+            onChange={(e) => setNewFront(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Back"
+            type="text"
+            fullWidth
+            multiline
+            rows={4}
+            value={newBack}
+            onChange={(e) => setNewBack(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteFlashcard} color="secondary">
+            Delete
+          </Button>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button onClick={handleSaveChanges}>Save</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

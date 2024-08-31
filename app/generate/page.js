@@ -19,6 +19,8 @@ import {
   CircularProgress,
   Menu,
   MenuItem,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -40,6 +42,8 @@ export default function Generate() {
   const [isAIGenerate, setIsAIGenerate] = useState(true);
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const router = useRouter();
 
@@ -70,7 +74,12 @@ export default function Generate() {
         return res.json();
       })
       .then((data) => {
-        setFlashcards(data);
+        if (data.failed) {
+          setErrorMessage(data.failed[0].text);
+          setSnackbarOpen(true);
+        } else {
+          setFlashcards(data);
+        }
         setLoading(false); // Set loading to false after data is fetched
       })
       .catch((error) => {
@@ -79,7 +88,7 @@ export default function Generate() {
         console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);
         alert(
-          "An error occurred while generating flashcards. Check console for details."
+          "An error occurred while generating flashcards. Please try again."
         );
       });
   };
@@ -247,6 +256,10 @@ export default function Generate() {
     };
 
     setFlashcards((prev) => [...prev, flashcard]);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
