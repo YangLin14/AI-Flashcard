@@ -316,6 +316,205 @@ export default function Home() {
           </div>
         </Grid>
       </Grid>
+      <Grid
+        container
+        spacing={4}
+        style={{
+          padding: "3rem 1.5rem",
+          backgroundColor: "#1e1e1e",
+          color: "#ffffff",
+        }}
+      >
+        {/* Contact Form Section */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "1rem 2rem",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: "500px" }}>
+            <Typography
+              variant="h5"
+              style={{
+                marginBottom: "1.5rem",
+                textAlign: "center",
+                fontWeight: "bold",
+              }}
+            >
+              Get in Touch
+            </Typography>
+            <form
+              method="post"
+              action="#"
+              onSubmit={(e) => {
+                e.preventDefault();
+                alert("Message sent!");
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.25rem",
+                }}
+              >
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "8px",
+                    border: "1px solid #444",
+                    backgroundColor: "#333",
+                    color: "#ffffff",
+                  }}
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "8px",
+                    border: "1px solid #444",
+                    backgroundColor: "#333",
+                    color: "#ffffff",
+                  }}
+                />
+                <textarea
+                  name="message"
+                  placeholder="Message"
+                  rows="5"
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "8px",
+                    border: "1px solid #444",
+                    backgroundColor: "#333",
+                    color: "#ffffff",
+                  }}
+                ></textarea>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  style={{
+                    backgroundColor: "#007bff",
+                    color: "#ffffff",
+                    padding: "0.75rem",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Send Message
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Grid>
+
+        {/* Contact Information Section */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "1rem 2rem",
+          }}
+        >
+          <div style={{ width: "100%", maxWidth: "500px" }}>
+            <Typography
+              variant="h5"
+              style={{
+                marginBottom: "1.5rem",
+                textAlign: "left",
+                fontWeight: "bold",
+              }}
+            >
+              Contact Information
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                textAlign: "left",
+              }}
+            >
+              <Typography variant="body1">
+                <strong>Address:</strong> 9500 Gilman Dr, La Jolla, CA, 92093
+              </Typography>
+              <Typography variant="body1">
+                <strong>Email:</strong>{" "}
+                <a
+                  href="mailto:fongyu903@gmail.com"
+                  style={{ color: "#007bff", textDecoration: "none" }}
+                >
+                  fongyu903@gmail.com
+                </a>
+              </Typography>
+              <Typography variant="body1">
+                <strong>Follow Me:</strong>
+                <span style={{ verticalAlign: "middle", marginLeft: "1rem" }}>
+                  <a
+                    href="https://www.linkedin.com/in/yang-12a4c/"
+                    target="_blank"
+                    style={{ color: "#ffffff", marginRight: "1rem" }}
+                  >
+                    <img
+                      src="/linkedin.webp"
+                      alt="LinkedIn"
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                  </a>
+                  <a
+                    href="https://github.com/YangLin14"
+                    target="_blank"
+                    style={{ color: "#ffffff" }}
+                  >
+                    <img
+                      src="/github.webp"
+                      alt="GitHub"
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                  </a>
+                </span>
+              </Typography>
+            </div>
+          </div>
+        </Grid>
+
+        {/* Footer Section */}
+        <Grid item xs={12} style={{ marginTop: "3rem", textAlign: "center" }}>
+          <Typography variant="body2" style={{ color: "#d3d3d3" }}>
+            &copy; {new Date().getFullYear()} Flashy.
+          </Typography>
+          <Typography variant="body2" style={{ color: "#d3d3d3" }}>
+            Developed by{" "}
+            <a
+              href="https://www.yourportfolio.com"
+              style={{ color: "#d3d3d3", textDecoration: "none" }}
+            >
+              Fong-Yu (Yang) Lin
+            </a>
+          </Typography>
+        </Grid>
+      </Grid>
     </div>
   );
 }
